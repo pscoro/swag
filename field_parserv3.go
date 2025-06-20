@@ -355,19 +355,6 @@ func (ps *tagBaseFieldParserV3) complementSchema(schema *spec.Schema, types []st
 		}
 	}
 
-	var allOfSchemas []*spec.RefOrSpec[spec.Schema]
-	allOfTagValue := ps.tag.Get(allOfTag)
-	if allOfTagValue != "" {
-		allOfTypes := strings.Split(allOfTagValue, ",")
-		for _, allOfType := range allOfTypes {
-			allOfSchema, err := ps.p.getTypeSchemaV3(allOfType, ps.file, true)
-			if err != nil {
-				return fmt.Errorf("can't find allOf type %q: %v", allOfType, err)
-			}
-			allOfSchemas = append(allOfSchemas, allOfSchema)
-		}
-	}
-
 	elemSchema := schema
 
 	if field.schemaType == ARRAY {
@@ -398,7 +385,6 @@ func (ps *tagBaseFieldParserV3) complementSchema(schema *spec.Schema, types []st
 	elemSchema.Enum = field.enums
 	elemSchema.Pattern = field.pattern
 	elemSchema.OneOf = oneOfSchemas
-	elemSchema.AllOf = allOfSchemas
 
 	return nil
 }

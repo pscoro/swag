@@ -889,15 +889,10 @@ func (p *Parser) parseTypeExprV3(file *ast.File, typeExpr ast.Expr, ref bool) (*
 
 func (p *Parser) parseStructV3(file *ast.File, struc *ast.StructType) (*spec.RefOrSpec[spec.Schema], error) {
 	required, properties, oneOfSchemas := make([]string, 0), make(map[string]*spec.RefOrSpec[spec.Schema]), make([]*spec.RefOrSpec[spec.Schema], 0)
-	allOfSchemas := make([]*spec.RefOrSpec[spec.Schema], 0)
 	annotations := ExtractStructAnnotations(file, struc)
 	var oneOfTypes []string
 	if val, ok := annotations["oneof"]; ok {
 		oneOfTypes = strings.Split(val, ",")
-	}
-	var allOfTypes []string
-	if val, ok := annotations["allof"]; ok {
-		allOfTypes = strings.Split(val, ",")
 	}
 	// When we have oneOf, we don't need to parse the fields
 	if len(oneOfTypes) == 0 {
@@ -930,13 +925,6 @@ func (p *Parser) parseStructV3(file *ast.File, struc *ast.StructType) (*spec.Ref
 		}
 		oneOfSchemas = append(oneOfSchemas, oneOfSchema)
 	}
-	for _, allOfType := range allOfTypes {
-		allOfSchema, err := p.getTypeSchemaV3(allOfType, file, true)
-		if err != nil {
-			return nil, fmt.Errorf("can't find allOf type %q: %v", allOfType, err)
-		}
-		allOfSchemas = append(allOfSchemas, allOfSchema)
-	}
 
 	sort.Strings(required)
 	result := spec.NewSchemaSpec()
@@ -944,7 +932,6 @@ func (p *Parser) parseStructV3(file *ast.File, struc *ast.StructType) (*spec.Ref
 	result.Spec.Properties = properties
 	result.Spec.Required = required
 	result.Spec.OneOf = oneOfSchemas
-	result.Spec.AllOf = allOfSchemas
 	return result, nil
 }
 

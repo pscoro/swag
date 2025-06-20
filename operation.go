@@ -436,7 +436,6 @@ const (
 	collectionFormatTag = "collectionFormat"
 	patternTag          = "pattern"
 	oneOfTag            = "oneOf"
-	allOfTag            = "allOf"
 )
 
 var regexAttributes = map[string]*regexp.Regexp{
