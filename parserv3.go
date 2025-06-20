@@ -332,9 +332,6 @@ func parseSecAttributesV3(context string, lines []string, index *int) (string, *
 		tokenURL         = "@tokenurl"
 		authorizationURL = "@authorizationurl"
 	)
-	for idx, line := range lines {
-		lines[idx] = strings.TrimSpace(line)
-	}
 
 	var search []string
 
@@ -488,9 +485,6 @@ func parseSecAttributesV3(context string, lines []string, index *int) (string, *
 func getSecurityDefinitionKey(lines []string) string {
 	for _, line := range lines {
 		if strings.HasPrefix(strings.ToLower(line), "@securitydefinitions") {
-			// Check if the string have tabs or spaces, replace them with a single space
-			line = strings.ReplaceAll(line, "\t", " ")
-			line = strings.ReplaceAll(line, "  ", " ")
 			splittedLine := strings.Split(line, " ")
 			return splittedLine[len(splittedLine)-1]
 		}
@@ -771,9 +765,6 @@ func (p *Parser) ParseDefinitionV3(typeSpecDef *TypeSpecDef) (*SchemaV3, error) 
 // fillDefinitionDescription additionally fills fields in definition (spec.Schema)
 // TODO: If .go file contains many types, it may work for a long time
 func fillDefinitionDescriptionV3(parser *Parser, definition *spec.Schema, file *ast.File, typeSpecDef *TypeSpecDef) {
-	if file == nil {
-		return
-	}
 	for _, astDeclaration := range file.Decls {
 		generalDeclaration, ok := astDeclaration.(*ast.GenDecl)
 		if !ok || generalDeclaration.Tok != token.TYPE {
